@@ -2,6 +2,7 @@ import hashlib
 import typing
 import base64
 import hmac
+from urllib import parse
 
 class CookieFactory:
     PREFIX = "s:"
@@ -14,7 +15,8 @@ class CookieFactory:
         self.cookie_signature: typing.Optional[bytes] = None
 
     def parse_cookie(self):
-        cookie_prefix_stripped = self.raw_cookie.strip(self.PREFIX)
+        cookie = parse.unquote(self.raw_cookie)
+        cookie_prefix_stripped = cookie.strip(self.PREFIX)
         cookie_value, cookie_signature = cookie_prefix_stripped.split(self.SEPARATOR)
         self.cookie_value = cookie_value.encode()
         self.cookie_signature = cookie_signature
