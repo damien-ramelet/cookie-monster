@@ -16,7 +16,7 @@ class CookieUnsigner:
         self.signed_cookie = signed_cookie
         return self.signed_cookie.unsign(self.wordlist)
 
-    def get_secret_key(self) -> str:
+    def get_secret_key(self) -> typing.Optional[str]:
         if self.signed_cookie is None:
             raise ValueError("You need to run the `unsign` command first")
         return self.signed_cookie.get_secret_key()

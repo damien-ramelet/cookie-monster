@@ -4,17 +4,29 @@ import base64
 import hmac
 
 class CookieFactory:
+    # https://github.com/expressjs/session/blob/v1.18.2/index.js#L664
+    PREFIX = "s:"
+    # https://github.com/tj/node-cookie-signature/blob/master/index.js#L19
+    SEPARATOR = "."
+
     def __init__(self, cookie: str):
         self.raw_cookie = cookie
         self.retrieved_secret_key: typing.Optional[str] = None
+        self.cookie_value: typing.Optional[bytes] = None
+        self.cookie_signature: typing.Optional[bytes] = None
+
+    def parse_cookie(self):
+        cookie_prefix_stripped = self.raw_cookie.strip(self.PREFIX)
+        cookie_value, cookie_signature = cookie_prefix_stripped.split(self.SEPARATOR)
+        self.cookie_value = cookie_value.encode()
+        self.cookie_signature = cookie_signature
 
     def unsign(self, wordlist: list[bytes]) -> bool:
-        cookie_value, cookie_signature = self.raw_cookie.split(".")
-        bytes_value = cookie_value.encode()
+        self.parse_cookie()
         for key in wordlist:
             key_without_crlf = key.strip(b"\r").strip(b"\n")
-            digest = hmac.new(key_without_crlf, bytes_value, digestmod=hashlib.sha256).digest()
-            has_unsign = base64.b64encode(digest).decode().split("=")[0] == cookie_signature
+            digest = hmac.new(key_without_crlf, self.cookie_value, digestmod=hashlib.sha256).digest()
+            has_unsign = base64.b64encode(digest).decode().split("=")[0] == self.cookie_signature
             if has_unsign:
                 self.retrieved_secret_key = key_without_crlf.decode()
                 return has_unsign
