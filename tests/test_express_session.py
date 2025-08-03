@@ -50,4 +50,12 @@ def test_we_can_past_the_all_thing_and_run_successfully():
     secret_key = unsigner.get_secret_key()
     assert secret_key == "keyboard cat"
 
+def test_we_can_forget_about_chars_url_encoded():
+    args = parser.parse_args(["--cookie", "s%3A26dcdb00-c145-46ae-b836-d7440ca5e72f.xVNKGwi6sMyirK5GeKeRgbj0%2Fj0z%2FNGcQ0mh08MSNVY", "-w", "keyboard cat"])
+    cookie = CookieFactory(args.cookie)
+    unsigner = CookieUnsigner(wordlist=args.words)
+    has_unsign = unsigner.unsign(cookie)
+    assert has_unsign
+    secret_key = unsigner.get_secret_key()
+    assert secret_key == "keyboard cat"
 
