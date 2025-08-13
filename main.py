@@ -14,8 +14,7 @@ parser.add_argument("--wordlist", type=pathlib.Path)
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    factory = CookieFactory.get_factory(kind=args.kind)
-    cookie = factory(cookie=args.cookie)
+    cookie = CookieFactory.get_cookie(kind=args.kind, cookie=args.cookie)
     unsigner = CookieUnsigner(wordlist=args.words, path=args.wordlist)
     has_unsign = unsigner.unsign(cookie)
     if has_unsign:

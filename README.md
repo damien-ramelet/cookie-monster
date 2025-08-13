@@ -10,9 +10,10 @@ cookie-monster is willing to automate the recovery of the said secret key.
 
 ## What
 
-cookie-monster is currently handling the below framework cookie session:
+cookie-monster is currently handling the below frameworks cookies session:
 
 - express-session
+- django
 
 More eventually coming.
 
@@ -30,12 +31,14 @@ And use cookie-monster:
 
 - With a list of secret keys through the command line
 ```bash
-$ uv run main.py --cookie s%3A897a6c4e-6156-4d06-9e7f-7309e5ba9aa0.id2ah%2B2fsa5Za2HdERwx7%2BF0C0ZaMhMzHjw2F61ebTQ -w "secret_key" -w "super_secret_key"
+$ uv run main.py --kind express-session --cookie s%3A897a6c4e-6156-4d06-9e7f-7309e5ba9aa0.id2ah%2B2fsa5Za2HdERwx7%2BF0C0ZaMhMzHjw2F61ebTQ -w "secret_key" -w "super_secret_key"
 secret_key
 ```
 
 - Or by providing a path to a wordlist
 ```bash
-$ uv run main.py --cookie s%3A897a6c4e-6156-4d06-9e7f-7309e5ba9aa0.id2ah%2B2fsa5Za2HdERwx7%2BF0C0ZaMhMzHjw2F61ebTQ --wordlist wordlist.txt
+$ uv run main.py --kind express-session --cookie s%3A897a6c4e-6156-4d06-9e7f-7309e5ba9aa0.id2ah%2B2fsa5Za2HdERwx7%2BF0C0ZaMhMzHjw2F61ebTQ --wordlist wordlist.txt
 secret_key
 ```
+
+

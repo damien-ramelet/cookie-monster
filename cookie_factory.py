@@ -9,6 +9,7 @@ import abc
 
 class CookieKind(enum.Enum):
     EXPRESS_SESSION = "express-session"
+    DJANGO = "django"
 
 
 class Cookie(abc.ABC):
@@ -60,8 +61,53 @@ class ExpressSessionCookie(Cookie):
         return self.retrieved_secret_key
 
 
+class DjangoCookie(Cookie):
+    # https://github.com/django/django/blob/5.2.5/django/core/signing.py#L9
+    SEPARATOR = ":"
+    # https://github.com/django/django/blob/5.2.5/django/core/signing.py#L188
+    SALT = b"django.core.signing.Signer"
+    # https://github.com/django/django/blob/5.2.5/django/core/signing.py#L192
+    HMAC_ALGORITHM = "sha256"
+
+    def __init__(self, cookie: str):
+        self.raw_cookie = cookie
+
+    def parse_cookie(self):
+        cookie_value, cookie_signature = self.raw_cookie.split(self.SEPARATOR)
+        self.cookie_value = cookie_value.encode()
+        self.cookie_signature = cookie_signature
+
+    def unsign(self, wordlist: list[bytes]) -> bool:
+        self.parse_cookie()
+        # https://github.com/django/django/blob/5.2.5/django/core/signing.py#L201
+        # ¯\_(ツ)_/¯
+        LAST_MINUTE_SALT = b"signer"
+        for key in wordlist:
+            key_without_crlf = key.strip(b"\r").strip(b"\n")
+            hasher = getattr(hashlib, self.HMAC_ALGORITHM)
+            salted_key = hasher(
+                self.SALT + LAST_MINUTE_SALT + key_without_crlf
+            ).digest()
+            digest = hmac.new(
+                salted_key, self.cookie_value, digestmod=self.HMAC_ALGORITHM
+            ).digest()
+            # https://github.com/django/django/blob/5.2.5/django/core/signing.py#L90
+            signature = base64.urlsafe_b64encode(digest).decode().strip("=")
+            has_unsign = signature == self.cookie_signature
+            if has_unsign:
+                self.retrieved_secret_key = key_without_crlf.decode()
+                return has_unsign
+        return False
+
+    def get_secret_key(self) -> typing.Optional[str]:
+        return self.retrieved_secret_key
+
+
 class CookieFactory:
-    cookie: dict[str, type[Cookie]] = {"express-session": ExpressSessionCookie}
+    cookie: dict[str, type[Cookie]] = {
+        "express-session": ExpressSessionCookie,
+        "django": DjangoCookie,
+    }
 
     @classmethod
     def get_cookie(cls, kind: str, cookie: str):
