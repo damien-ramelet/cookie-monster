@@ -15,8 +15,7 @@ def test_we_can_successfully_retrieve_express_session_cookie_secret_key():
             "keyboard cat",
         ]
     )
-    factory = CookieFactory.get_factory(kind=args.kind)
-    cookie = factory(cookie=args.cookie)
+    cookie = CookieFactory.get_cookie(kind=args.kind, cookie=args.cookie)
     unsigner = CookieUnsigner(wordlist=args.words)
     has_unsign = unsigner.unsign(cookie)
     assert has_unsign
@@ -39,8 +38,7 @@ def test_we_can_successfully_retrieve_express_session_cookie_secret_key_using_wo
             "keyboard cat",
         ]
     )
-    factory = CookieFactory.get_factory(kind=args.kind)
-    cookie = factory(cookie=args.cookie)
+    cookie = CookieFactory.get_cookie(kind=args.kind, cookie=args.cookie)
     unsigner = CookieUnsigner(wordlist=args.words)
     has_unsign = unsigner.unsign(cookie)
     assert has_unsign
@@ -63,8 +61,7 @@ def test_we_can_successfully_retrieve_express_session_cookie_secret_key_using_fi
             str(wordlist_path),
         ]
     )
-    factory = CookieFactory.get_factory(kind=args.kind)
-    cookie = factory(cookie=args.cookie)
+    cookie = CookieFactory.get_cookie(kind=args.kind, cookie=args.cookie)
     unsigner = CookieUnsigner(path=args.wordlist)
     has_unsign = unsigner.unsign(cookie)
     assert has_unsign
@@ -85,8 +82,7 @@ def test_we_dont_yield_false_positive(tmpdir):
             str(wordlist_path),
         ]
     )
-    factory = CookieFactory.get_factory(kind=args.kind)
-    cookie = factory(cookie=args.cookie)
+    cookie = CookieFactory.get_cookie(kind=args.kind, cookie=args.cookie)
     unsigner = CookieUnsigner(path=args.wordlist)
     has_unsign = unsigner.unsign(cookie)
     assert not has_unsign
@@ -103,8 +99,7 @@ def test_we_can_past_the_all_thing_and_run_successfully():
             "keyboard cat",
         ]
     )
-    factory = CookieFactory.get_factory(kind=args.kind)
-    cookie = factory(cookie=args.cookie)
+    cookie = CookieFactory.get_cookie(kind=args.kind, cookie=args.cookie)
     unsigner = CookieUnsigner(wordlist=args.words)
     has_unsign = unsigner.unsign(cookie)
     assert has_unsign
@@ -123,8 +118,7 @@ def test_we_can_forget_about_chars_url_encoded():
             "keyboard cat",
         ]
     )
-    factory = CookieFactory.get_factory(kind=args.kind)
-    cookie = factory(cookie=args.cookie)
+    cookie = CookieFactory.get_cookie(kind=args.kind, cookie=args.cookie)
     unsigner = CookieUnsigner(wordlist=args.words)
     has_unsign = unsigner.unsign(cookie)
     assert has_unsign

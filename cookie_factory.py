@@ -64,5 +64,5 @@ class CookieFactory:
     cookie: dict[str, type[Cookie]] = {"express-session": ExpressSessionCookie}
 
     @classmethod
-    def get_factory(cls, kind: str):
-        return cls.cookie[kind]
+    def get_cookie(cls, kind: str, cookie: str):
+        return cls.cookie[kind](cookie=cookie)
