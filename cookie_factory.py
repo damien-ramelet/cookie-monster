@@ -6,21 +6,21 @@ from urllib import parse
 import enum
 import abc
 
+
 class CookieKind(enum.Enum):
     EXPRESS_SESSION = "express-session"
 
+
 class Cookie(abc.ABC):
     @abc.abstractmethod
-    def parse_cookie(self) -> None:
-        ...
+    def parse_cookie(self) -> None: ...
 
     @abc.abstractmethod
-    def unsign(self, wordlist: list[bytes]) -> bool:
-        ...
+    def unsign(self, wordlist: list[bytes]) -> bool: ...
 
     @abc.abstractmethod
-    def get_secret_key(self) -> typing.Optional[str]:
-        ...
+    def get_secret_key(self) -> typing.Optional[str]: ...
+
 
 class ExpressSessionCookie(Cookie):
     # https://github.com/expressjs/session/blob/v1.18.2/index.js#L664
@@ -45,8 +45,12 @@ class ExpressSessionCookie(Cookie):
         self.parse_cookie()
         for key in wordlist:
             key_without_crlf = key.strip(b"\r").strip(b"\n")
-            digest = hmac.new(key_without_crlf, self.cookie_value, digestmod=hashlib.sha256).digest()
-            has_unsign = base64.b64encode(digest).decode().split("=")[0] == self.cookie_signature
+            digest = hmac.new(
+                key_without_crlf, self.cookie_value, digestmod=hashlib.sha256
+            ).digest()
+            has_unsign = (
+                base64.b64encode(digest).decode().split("=")[0] == self.cookie_signature
+            )
             if has_unsign:
                 self.retrieved_secret_key = key_without_crlf.decode()
                 return has_unsign
@@ -54,12 +58,11 @@ class ExpressSessionCookie(Cookie):
 
     def get_secret_key(self) -> typing.Optional[str]:
         return self.retrieved_secret_key
-        
+
+
 class CookieFactory:
     cookie: dict[str, type[Cookie]] = {"express-session": ExpressSessionCookie}
 
     @classmethod
     def get_factory(cls, kind: str):
         return cls.cookie[kind]
-
-

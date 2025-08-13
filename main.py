@@ -5,7 +5,9 @@ from cookie_factory import CookieFactory, CookieKind
 from cookie_unsigner import CookieUnsigner
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--kind", "-k", choices=[kind.value for kind in CookieKind], required=True)
+parser.add_argument(
+    "--kind", "-k", choices=[kind.value for kind in CookieKind], required=True
+)
 parser.add_argument("--cookie", "-c", type=str, required=True)
 parser.add_argument("--words", "-w", action="append", type=str.encode)
 parser.add_argument("--wordlist", type=pathlib.Path)
@@ -18,6 +20,3 @@ if __name__ == "__main__":
     has_unsign = unsigner.unsign(cookie)
     if has_unsign:
         print(unsigner.get_secret_key())
-
-
-

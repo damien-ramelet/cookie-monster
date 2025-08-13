@@ -2,8 +2,13 @@ from cookie_factory import Cookie
 import pathlib
 import typing
 
+
 class CookieUnsigner:
-    def __init__(self, wordlist: typing.Optional[list[bytes]] = None, path: typing.Optional[pathlib.Path] = None):
+    def __init__(
+        self,
+        wordlist: typing.Optional[list[bytes]] = None,
+        path: typing.Optional[pathlib.Path] = None,
+    ):
         self.signed_cookie: typing.Optional[Cookie] = None
         self.wordlist: list[bytes]
         if wordlist is not None:
