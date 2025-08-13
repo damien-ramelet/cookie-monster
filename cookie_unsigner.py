@@ -1,10 +1,10 @@
-from cookie_factory import CookieFactory
+from cookie_factory import Cookie
 import pathlib
 import typing
 
 class CookieUnsigner:
     def __init__(self, wordlist: typing.Optional[list[bytes]] = None, path: typing.Optional[pathlib.Path] = None):
-        self.signed_cookie: typing.Optional[CookieFactory] = None
+        self.signed_cookie: typing.Optional[Cookie] = None
         self.wordlist: list[bytes]
         if wordlist is not None:
             self.wordlist = wordlist
@@ -12,7 +12,7 @@ class CookieUnsigner:
             with path.open("rb") as f:
                 self.wordlist = f.readlines()
 
-    def unsign(self, signed_cookie: CookieFactory) -> bool:
+    def unsign(self, signed_cookie: Cookie) -> bool:
         self.signed_cookie = signed_cookie
         return self.signed_cookie.unsign(self.wordlist)
 

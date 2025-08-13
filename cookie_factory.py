@@ -3,8 +3,26 @@ import typing
 import base64
 import hmac
 from urllib import parse
+import enum
+import abc
 
-class CookieFactory:
+class CookieKind(enum.Enum):
+    EXPRESS_SESSION = "express-session"
+
+class Cookie(abc.ABC):
+    @abc.abstractmethod
+    def parse_cookie(self) -> None:
+        ...
+
+    @abc.abstractmethod
+    def unsign(self, wordlist: list[bytes]) -> bool:
+        ...
+
+    @abc.abstractmethod
+    def get_secret_key(self) -> typing.Optional[str]:
+        ...
+
+class ExpressSessionCookie(Cookie):
     # https://github.com/expressjs/session/blob/v1.18.2/index.js#L664
     PREFIX = "s:"
     # https://github.com/tj/node-cookie-signature/blob/master/index.js#L19
@@ -37,3 +55,11 @@ class CookieFactory:
     def get_secret_key(self) -> typing.Optional[str]:
         return self.retrieved_secret_key
         
+class CookieFactory:
+    cookie: dict[str, type[Cookie]] = {"express-session": ExpressSessionCookie}
+
+    @classmethod
+    def get_factory(cls, kind: str):
+        return cls.cookie[kind]
+
+
